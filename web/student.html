@@ -34,7 +34,7 @@
 </div>
 <!-- 添加和修改弹框  -->
 <div class="layui-row" id="addStu" style="display:none;">
-    <form lay-filter="layui-form" class="layui-form" action="" method="post">
+    <form id="layui-form" lay-filter="layui-form" class="layui-form" action="" method="post">
         <div class="layui-form-item">
             <label class="layui-form-label">stuName</label>
             <div class="layui-input-inline">
@@ -96,12 +96,22 @@
 </script>
 
 <script>
+    // 追加不能删除的id属性
+    var prependId = $('<div class="layui-form-item">\n' +
+        '        <label class="layui-form-label">ID</label>\n' +
+        '        <div class="layui-input-inline">\n' +
+        '            <input id="id" type="text" name="id"\n' +
+        '                   class="layui-input layui-disabled">\n' +
+        '        </div>\n' +
+        '    </div>')
+
+    var Id // 传递id值
     var tableData // 数据表格用一个变量接收，方便重新渲染
     var form = layui.form;
     var table = layui.table;
+
+
     layui.use(function () {
-
-
         // 数据表格的渲染
         tableData = table.render({
             elem: '#demo' // id方式获取
@@ -206,27 +216,15 @@
             layer.open({
                 type: 1,
                 title: "添加Student",
-                area: ['70%', '50%'],
+                area: ['30%', '50%'],
                 shadeClose: true,
-                shade: 0.8,
                 content: $('#addStu'),// 弹出添加表单
                 // content:'/addStu.html',
                 end: function () {
                     $('#addStu').css('display', 'none')// 结束该事件之后不显示
                 }
             });
-            form.on('submit(submit)', function (data) {
-                $.ajax({
-                    url: '/add'
-                    , type: 'post'
-                    , data: data.field// 这里的data是
-                    , success: function () {
-                        layer.msg("添加成功", {icon: 1})
-                        tableData.reload()
-                    }
-                })
-                // return false // 阻止表单提交，否则将携带form的数据
-            })
+            form.on('submit(submit)', addAJAX)
         }
 
         // 更新
@@ -270,7 +268,6 @@
         //         })
         //     });
         // }
-
     });
     // 如何使用数据接口
     // code：自定义返回码
@@ -279,59 +276,21 @@
     // data：查出的数据
 
 
-    <!--定义的方法-->
-    // 年龄实时检查
-    $('#stuAge').on('input', function () {
-        var age = $('#stuAge').val()
-        if (age >= 18 && age <= 100) {
-            $('.checkAge').text("成年")
-        } else if (age >= 0 && age < 18) {
-            $('.checkAge').text("未成年")
-        }
-        if (age > 100 || age < 0) {
-            $('.checkAge').text("妖怪")
-        }
-    })
-
-    /// 删一个
-    function deleteStu(id) {
-        $.ajax({
-            url: '/delete?id=' + id
-            , type: 'post'
-            , async: false
-            , success: function () {
-                layer.msg("删除成功", {icon: 1})
-                tableData.reload() // 只刷新数据表格而不用重新请求location.reload()
-            }
-        })
-    }
-
-    // 删多个
-    function deleteStus(ids) {
-        $.ajax({
-            url: '/delete?ids=' + ids
-            , type: 'post'
-            , async: false
-            , success: function () {
-                layer.msg("删除成功", {icon: 1})
-                tableData.reload()
-            }
-        })
-    }
-
     // 之前写的
     // function updateStu(id, name, sex, age, clazz) {// 给子页面传值
-    var Id
     function updateStu(obj) {// 给子页面传值
+        // 追加id
+        $('#layui-form').prepend(prependId)
         var data = obj.data
         Id = data.id // 保存id值，下面的form表单中没有id
-        form.val('layui-form',data)
+        form.val('layui-form', data)
+        checkAge()
+        debugger
         layer.open({
             type: 1,
             title: '更新' + data.id,
             shadeClose: true,
-            shade: 0.8,
-            area: ['70%', '50%'],
+            area: ['30%', '50%'],
             // content: '/updateStu.html?id=' + id + 'stuName=' + name + 'stuSex=' + sex + "stuClazz=" + clazz, //iframe的url，不对我傻逼了这不就是get了吗
             // content: '/updateStu.html',
             content: $('#addStu'),
@@ -354,26 +313,83 @@
             end: function () {
                 $('#addStu').css('display', 'none')
                 // 清空表单，不然再次点击添加时会有数据
+                $('#layui-form')[0].children[0].remove()// 删除ID
                 $('.layui-form')[1].reset()
                 tableData.reload()
             }
         });
-        form.on('submit(submit)', function (data) {
-            data.field.id = Id
-            // console.log(data.field)
-            $.ajax({
-                url: '/update'
-                , type: 'post'
-                , data: data.field
-                , success: function () {
-                    layer.msg("修改成功", {icon: 1})
-                }
-            })
-            // return false // 阻止表单提交，否则将携带form的数据
+        form.on('submit(submit)', updateAJAX)
+    }
+
+
+    <!--定义的方法-->
+    // 年龄实时检查
+    var checkAge = function () {
+        var age = $('#stuAge').val()
+        if (age >= 18 && age <= 100) {
+            $('.checkAge').text("成年")
+        } else if (age >= 0 && age < 18) {
+            $('.checkAge').text("未成年")
+        }
+        if (age > 100 || age < 0) {
+            $('.checkAge').text("妖怪")
+        }
+    }
+    $('#stuAge').on('input', checkAge)
+
+
+    // 优化
+    var addAJAX = function (data) {
+        $.ajax({
+            url: '/add'
+            , type: 'post'
+            , data: data.field// 这里的data不是你想的data，要穿json
+            , success: function () {
+                layer.msg("添加成功", {icon: 1},5000)
+                tableData.reload()
+            }
+        })
+    }
+
+    var updateAJAX = function (data) {
+        data.field.id = Id
+        // console.log(data.field)
+        $.ajax({
+            url: '/update'
+            , type: 'post'
+            , data: data.field
+            , success: function () {
+                layer.msg("修改成功", {icon: 1},5000)
+            }
+        })
+        // return false // 阻止表单提交，否则将携带form的数据
+    }
+
+    /// 删一个
+    function deleteStu(id) {
+        $.ajax({
+            url: '/delete?id=' + id
+            , type: 'post'
+            , async: false
+            , success: function () {
+                layer.msg("删除成功", {icon: 1},5000)
+                tableData.reload() // 只刷新数据表格而不用重新请求location.reload()
+            }
+        })
+    }
+
+    // 删多个
+    function deleteStus(ids) {
+        $.ajax({
+            url: '/delete?ids=' + ids
+            , type: 'post'
+            , async: false
+            , success: function () {
+                layer.msg("删除成功", {icon: 1},5000)
+                tableData.reload()
+            }
         })
     }
 </script>
-
-
 </body>
 </html>
