@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>table 模块快速使用</title>
+    <!--    <link rel="stylesheet" href="/layui/layui.css" media="all">-->
+    <!--    <script src="/layui/layui.js"></script>-->
+    <!-- 引入 layui.css -->
+    <link href="//unpkg.com/layui@2.7.6/dist/css/layui.css" rel="stylesheet">
+
+    <!-- 引入 layui.js -->
+    <script src="//unpkg.com/layui@2.7.6/dist/layui.js"></script>
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <style>
+        body {
+            padding: 6px 16px;
+        }
+
+        .demo-carousel {
+            height: 200px;
+            line-height: 200px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+
+<table id="demo" lay-filter="test"></table>
+<div class="layui-row">
+    <div class="layui-col-md12">
+        <table class="layui-hide" id="test" lay-filter="test"></table>
+    </div>
+</div>
+<!-- 添加和修改弹框  -->
+<div class="layui-row" id="addStu" style="display:none;">
+    <form lay-filter="layui-form" class="layui-form" action="" method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label">stuName</label>
+            <div class="layui-input-inline">
+                <input id="stuName" type="text" name="stuName" required lay-verify="required"
+                       placeholder="请输入stuName"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">stuSex</label>
+            <div class="layui-input-inline">
+                <input class="stuSex" type="radio" name="stuSex" value="男" title="男">
+                <input class="stuSex" type="radio" name="stuSex" value="女" title="女" checked>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">stuAge</label>
+            <div class="layui-input-inline">
+                <input id="stuAge" type="number" name="stuAge" required lay-verify="required" placeholder="stuAge"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux checkAge">是否成年</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">stuClazz</label>
+            <div class="layui-input-inline">
+                <select id="stuClazz" name="stuClazz" lay-verify="required">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item" align="center">
+            <div class="layui-input-blockd">
+                <button class="layui-btn" lay-submit lay-filter="submit">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--这个是单元格里面的修改删除-->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-sm" lay-event="update">修改</a>
+    <a class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">删除</a>
+</script>
+
+<!--这个是数据表格左上角的-->
+<script type="text/html" id="Add_Delete">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="add">添加</button>
+        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">删除</button>
+    </div>
+</script>
+
+<script>
+    var tableData // 数据表格用一个变量接收，方便重新渲染
+    var form = layui.form;
+    var table = layui.table;
+    layui.use(function () {
+
+
+        // 数据表格的渲染
+        tableData = table.render({
+            elem: '#demo' // id方式获取
+            // , height: 500
+            , title: '学生表'
+            , url: '/json' //数据接口
+            , toolbar: '#Add_Delete' // 左上角的
+            , totalRow: true //开启合计行
+            , page: true //开启分页
+            , cols: [
+                [ //表头
+                    {type: 'checkbox', fixed: 'left'}
+                    , {// field的值必须与数据值（JSON格式）一致
+                    // title用于展示
+                    // sort：可排序，就是小箭头，点击升序或降序
+                    // fixed：固定
+                    field: 'id', title: 'ID', sort: true, fixed: 'left'
+                }
+                    , {field: 'stuName', title: '用户名'}
+                    , {field: 'stuSex', title: '性别'}
+                    , {field: 'stuAge', title: '年龄', sort: true}
+                    , {field: 'stuClazz', title: '班级'}
+                    , {field: '', title: '操作', align: 'center', toolbar: '#barDemo'}
+                ]
+            ]
+        });
+
+        // 头工具栏事件
+        table.on('toolbar(test)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id)
+                , datas = checkStatus.data; //获取选中的数据
+            // console.log(checkStatus) // 一个对象{data,isAll}data就是点击的按钮
+            // console.log(datas) // 一个Array数组，里面封装的就是自己定义的JSON对象
+            switch (obj.event) {
+                case 'add':
+                    // 之前写的
+                    // layer.open({
+                    //     type: 2,
+                    //     area: ['700px', '450px'],
+                    //     fixed: false, //不固定
+                    //     maxmin: true,
+                    //     content: '/addStu.html',
+                    //     success: function () {
+                    //         parent.layer.close(parent.layer.getFrameIndex(window.name))
+                    //     }
+                    // });
+                    addStu()
+                    break;
+                case 'delete':
+                    if (datas.length === 0) {
+                        layer.msg('请选择至少一行');
+                    } else {
+                        // 循环遍历实现多个删除 ，可以写个不用一个一个确认的（测试了一下他不给我删除之前的值的机会直接覆盖了弹窗，这个方法用不了
+                        // $.each(datas,function (i, data) {// 数组，function(下标，元素)
+                        //     layer.msg('确定删除id为' + data.id + "?", {
+                        //         time: 0 //不自动关闭
+                        //         , btn: ['确定', '关闭']
+                        //         , yes: function (index) {
+                        //             layer.close(index);
+                        //             deleteStu(data.id)
+                        //         }
+                        //     });
+                        // })
+                        var deleteIds = []
+                        $.each(datas, function (i, data) {// 数组，function(下标，元素)
+                            deleteIds.push(parseInt(data.id))
+                        })
+                        console.log(deleteIds)
+                        layer.msg('确定删除id为' + deleteIds + "?", {
+                            time: 0 //不自动关闭
+                            , btn: ['确定', '关闭']
+                            , yes: function (index) {
+                                layer.close(index);
+                                deleteStus(deleteIds)
+                            }
+                        });
+
+                    }
+                    break;
+            }
+        });
+
+        // 单元格【操作】事件
+        table.on('tool(test)', function (obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+            if (layEvent === 'update') {
+                // updateStu(data.id, data.stuName, data.stuSex, data.stuAge, data.stuClazz)
+                updateStu(obj)
+            } else if (layEvent === 'delete') {
+                layer.confirm('真的删除' + data.stuName + '么', function (index) {
+                    layer.close(index);
+                    //向服务端发送删除指令
+                    deleteStu(data.id)
+                })
+            }
+        });
+
+
+        // 添加
+        function addStu() {
+            layer.open({
+                type: 1,
+                title: "添加Student",
+                area: ['70%', '50%'],
+                shadeClose: true,
+                shade: 0.8,
+                content: $('#addStu'),// 弹出添加表单
+                // content:'/addStu.html',
+                end: function () {
+                    $('#addStu').css('display', 'none')// 结束该事件之后不显示
+                }
+            });
+            form.on('submit(submit)', function (data) {
+                $.ajax({
+                    url: '/add'
+                    , type: 'post'
+                    , data: data.field// 这里的data是
+                    , success: function () {
+                        layer.msg("添加成功", {icon: 1})
+                        tableData.reload()
+                    }
+                })
+                // return false // 阻止表单提交，否则将携带form的数据
+            })
+        }
+
+        // 更新
+        // function updateStu(id, name, sex, age, clazz) {// 给子页面传值
+        //     console.log(id, name, sex, age, clazz)
+        //     layer.open({
+        //         type: 1,
+        //         title: '更新' + id,
+        //         area: ['70%', '50%'],
+        //         content: $('#addStu'),
+        //         success: function () {
+        //             $('#stuName').val(name);
+        //             $('#stuAge').val(age);
+        //             // 单选框
+        //             $('.stuSex').filter(function () {
+        //                 return this.value === sex
+        //             }).prop("checked", true);
+        //             // 下拉框
+        //             $('#stuClazz').filter(function () {
+        //                 return $(this).html() === clazz
+        //             }).prop('checked', true)
+        //         },
+        //         end: function () {
+        //             $('#addStu').css('display', 'none')// 结束该事件之后不显示
+        //
+        //         }
+        //     });
+        //
+        //     form.on('submit(submit)', function (data) {// 提交之后执行的方法
+        //         console.log(data)
+        //         debugger
+        //         $.ajax({
+        //             url: '/update'
+        //             , type: 'post'
+        //             , data: data.field
+        //             , success: function () {
+        //                 debugger
+        //                 layer.msg("修改成功", {icon: 1})
+        //                 tableData.reload()
+        //             }
+        //         })
+        //     });
+        // }
+
+    });
+    // 如何使用数据接口
+    // code：自定义返回码
+    // msg：展示信息
+    // count：总数据
+    // data：查出的数据
+
+
+    <!--定义的方法-->
+    // 年龄实时检查
+    $('#stuAge').on('input', function () {
+        var age = $('#stuAge').val()
+        if (age >= 18 && age <= 100) {
+            $('.checkAge').text("成年")
+        } else if (age >= 0 && age < 18) {
+            $('.checkAge').text("未成年")
+        }
+        if (age > 100 || age < 0) {
+            $('.checkAge').text("妖怪")
+        }
+    })
+
+    /// 删一个
+    function deleteStu(id) {
+        $.ajax({
+            url: '/delete?id=' + id
+            , type: 'post'
+            , async: false
+            , success: function () {
+                layer.msg("删除成功", {icon: 1})
+                tableData.reload() // 只刷新数据表格而不用重新请求location.reload()
+            }
+        })
+    }
+
+    // 删多个
+    function deleteStus(ids) {
+        $.ajax({
+            url: '/delete?ids=' + ids
+            , type: 'post'
+            , async: false
+            , success: function () {
+                layer.msg("删除成功", {icon: 1})
+                tableData.reload()
+            }
+        })
+    }
+
+    // 之前写的
+    // function updateStu(id, name, sex, age, clazz) {// 给子页面传值
+    var Id
+    function updateStu(obj) {// 给子页面传值
+        var data = obj.data
+        Id = data.id // 保存id值，下面的form表单中没有id
+        form.val('layui-form',data)
+        layer.open({
+            type: 1,
+            title: '更新' + data.id,
+            shadeClose: true,
+            shade: 0.8,
+            area: ['70%', '50%'],
+            // content: '/updateStu.html?id=' + id + 'stuName=' + name + 'stuSex=' + sex + "stuClazz=" + clazz, //iframe的url，不对我傻逼了这不就是get了吗
+            // content: '/updateStu.html',
+            content: $('#addStu'),
+            success: function (dom, index) {
+                // var body = $('#layui-layer-iframe' + index);// 从父页面向子页面传值，获取子页面框架id
+                //获取子页面的元素
+                // 前两个是text，所以直接用val赋值
+                // body.contents().find("#id").val(id);
+                // body.contents().find('#stuName').val(name);
+                // body.contents().find('#stuAge').val(age);
+                // // 单选框
+                // $(document).ready(function (sex) {
+                //     body.contents().find('#stuSex').filter(function () {
+                //         return $(this).value === sex
+                //     }).prop("checked", true);
+                // })
+                // // 下拉框
+                // body.contents().find('#stuClazz').val(clazz);
+            },
+            end: function () {
+                $('#addStu').css('display', 'none')
+                // 清空表单，不然再次点击添加时会有数据
+                $('.layui-form')[1].reset()
+                tableData.reload()
+            }
+        });
+        form.on('submit(submit)', function (data) {
+            data.field.id = Id
+            // console.log(data.field)
+            $.ajax({
+                url: '/update'
+                , type: 'post'
+                , data: data.field
+                , success: function () {
+                    layer.msg("修改成功", {icon: 1})
+                }
+            })
+            // return false // 阻止表单提交，否则将携带form的数据
+        })
+    }
+</script>
+
+
+</body>
+</html>

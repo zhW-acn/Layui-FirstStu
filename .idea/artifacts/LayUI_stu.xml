@@ -1,0 +1,19 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="LayUI-stu">
+    <output-path>$PROJECT_DIR$/out/artifacts/LayUI_stu</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="LayUI-stu/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="LayUI-stu" />
+          <element id="library" level="application" name="jquery-3.7.1" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="file-copy" path="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.26/lombok-1.18.26.jar" />
+          <element id="library" level="project" name="lib" />
+          <element id="library" level="project" name="servlet-api" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
