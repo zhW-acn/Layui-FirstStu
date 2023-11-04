@@ -10,12 +10,18 @@
 ## 回忆一下我踩过的坑
 ~~不算是坑吧，就是自己不会用~~
 1. form表单的提交：layui在脚本中可以不用写action而通过form.on("submit(提交按钮的lay-filter)","点击后执行函数，通常写ajax")方法提交表单，
-
 而我在form上又填了一边action，导致它不通过ajax提交，ajax success后也不执行任何函数，页面卡死。我还以为是Servlet那里需要转发重定向，浪费了很多时间在这里
-
 2. 提交的data格式： 在student.html中的326行的data与367行的data并不是一个东西，ajax中的data很有迷惑性（导致我以为提交的就是data，而不是json）。这里debugger两三遍就发现问题了
-
 3. 页面传值：我的一个需求是更改操作需要把当前行的数据自动填充到弹窗里的form表单中。谷歌百度GPT搜了个遍就差没问星火大模型了，结果昨晚睡不着在[b站](https://www.bilibili.com/video/BV1jX4y1t7EH/?p=6&share_source=copy_web&vd_source=1697141e3e3763e3917ed950f71a6c1c&t=421)
 上一搜。人家一个函数就搞定了我无语了。这里花的时间最长，主要是对iframe，弹窗，JQuery和Layui整体的使用不熟练。
+4. 我重新写了addStuServlet的接收格式：在下面总结一下
+<hr>
 
-这是我目前做的第一个自以为比较满意的小项目
+### 如果使用JSON格式传递对象，你要做的是：
+1. 前端：确保ajax中的data是json对象。如果是字符串，使用JSON.stringify()进行转换。否则后端传入的是以url问号带参的数据
+2. 后端：确保读取完整，使用BufferedReader按行读取并拼接。若出现乱码问题使用`URLDecoder.decode(String,"utf8");`转码
+3. 后端接收到前端传入的JSON字符串，需要转为对象进行操作。使用fastjson包的`JSONObject.parseObject(jsonString, XXX.class);`封装成XXX对象
+
+至此，其他servlet我懒得改了，会一个就行
+
+这是我目前做的第一个自以为比较满意的小项目除了弹窗显示成功和失败那里

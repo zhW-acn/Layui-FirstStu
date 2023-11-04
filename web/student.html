@@ -285,7 +285,6 @@
         Id = data.id // 保存id值，下面的form表单中没有id
         form.val('layui-form', data)
         checkAge()
-        debugger
         layer.open({
             type: 1,
             title: '更新' + data.id,
@@ -342,9 +341,10 @@
         $.ajax({
             url: '/add'
             , type: 'post'
-            , data: data.field// 这里的data不是你想的data，要穿json
+            , data: JSON.stringify(data.field)// 这里的data不是你想的data，要传json格式的对象，因为我在servlet中没有用parameter
+            , dataType: 'json'
             , async: false
-            ,success:function () {
+            , success: function () {
                 layer.msg("添加成功", {icon: 1}, 5000)
                 tableData.reload()
             }
@@ -359,7 +359,7 @@
             , type: 'post'
             , data: data.field
             , async: false
-            ,success:function () {
+            , success: function () {
                 layer.msg("修改成功", {icon: 1}, 5000)
                 tableData.reload()
             }

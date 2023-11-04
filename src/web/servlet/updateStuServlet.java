@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * @Description: TODO
@@ -23,7 +24,7 @@ public class updateStuServlet extends HttpServlet {
         String stuSex = req.getParameter("stuSex");
         int stuAge = Integer.parseInt(req.getParameter("stuAge"));
         String stuClazz = req.getParameter("stuClazz");
-        Student student = new Student(id,stuName,stuSex,stuAge,stuClazz);
+        Student student = new Student(id, stuName, stuSex, stuAge, stuClazz);
 
         //dao
         DB.updateStu(student);
