@@ -315,7 +315,6 @@
                 // 清空表单，不然再次点击添加时会有数据
                 $('#layui-form')[0].children[0].remove()// 删除ID
                 $('.layui-form')[1].reset()
-                tableData.reload()
             }
         });
         form.on('submit(submit)', updateAJAX)
@@ -344,8 +343,9 @@
             url: '/add'
             , type: 'post'
             , data: data.field// 这里的data不是你想的data，要穿json
-            , success: function () {
-                layer.msg("添加成功", {icon: 1},5000)
+            , async: false
+            ,success:function () {
+                layer.msg("添加成功", {icon: 1}, 5000)
                 tableData.reload()
             }
         })
@@ -358,8 +358,10 @@
             url: '/update'
             , type: 'post'
             , data: data.field
-            , success: function () {
-                layer.msg("修改成功", {icon: 1},5000)
+            , async: false
+            ,success:function () {
+                layer.msg("修改成功", {icon: 1}, 5000)
+                tableData.reload()
             }
         })
         // return false // 阻止表单提交，否则将携带form的数据
@@ -372,7 +374,7 @@
             , type: 'post'
             , async: false
             , success: function () {
-                layer.msg("删除成功", {icon: 1},5000)
+                layer.msg("删除成功", {icon: 1}, 5000)
                 tableData.reload() // 只刷新数据表格而不用重新请求location.reload()
             }
         })
@@ -385,7 +387,7 @@
             , type: 'post'
             , async: false
             , success: function () {
-                layer.msg("删除成功", {icon: 1},5000)
+                layer.msg("删除成功", {icon: 1}, 5000)
                 tableData.reload()
             }
         })
