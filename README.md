@@ -20,8 +20,19 @@
 ### 如果使用JSON格式传递对象，你要做的是：
 1. 前端：确保ajax中的data是json对象。如果是字符串，使用JSON.stringify()进行转换。否则后端传入的是以url问号带参的数据
 2. 后端：确保读取完整，使用BufferedReader按行读取并拼接。若出现乱码问题使用`URLDecoder.decode(String,"utf8");`转码
-3. 后端接收到前端传入的JSON字符串，需要转为对象进行操作。使用fastjson包的`JSONObject.parseObject(jsonString, XXX.class);`封装成XXX对象
+3. 后端接收到前端传入的JSON字符串，需要转为对象进行操作。使用fastjson包的`JSONObject.parseObject(jsonString, XXX.class);`封装成XXX对象【ATTENTION：重写toString】
 
 至此，其他servlet我懒得改了，会一个就行
-
+<hr>
 这是我目前做的第一个自以为比较满意的小项目除了弹窗显示成功和失败那里
+
+<hr>
+又一个遇到的坑2023.11.07
+
+Uncaught TypeError: Cannot create property 'LAY_TABLE_INDEX' on xxx
+
+这个报错指的是你的data的JSON不为`[{},{}...]`这样的格式。我的data只有一个JSON对象，所以在拼接的时候没有中括号，导致报错。
+
+自作聪明封装了一个JSONConstructor，~~你还能跟阿里大佬比吗~~有时间再重新封装一个这个样式的JSON用于Layui
+`{"code":0,"msg":"","data":[{},{}....]}`
+
