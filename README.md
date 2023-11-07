@@ -20,7 +20,7 @@
 ### 如果使用JSON格式传递对象，你要做的是：
 1. 前端：确保ajax中的data是json对象。如果是字符串，使用JSON.stringify()进行转换。否则后端传入的是以url问号带参的数据
 2. 后端：确保读取完整，使用BufferedReader按行读取并拼接。若出现乱码问题使用`URLDecoder.decode(String,"utf8");`转码
-3. 后端接收到前端传入的JSON字符串，需要转为对象进行操作。使用fastjson包的`JSONObject.parseObject(jsonString, XXX.class);`封装成XXX对象
+3. 后端接收到前端传入的JSON字符串，需要转为对象进行操作。使用fastjson包的`JSONObject.parseObject(jsonString, XXX.class);`封装成XXX对象【ATTENTION：重写toString】
 
 至此，其他servlet我懒得改了，会一个就行
 
