@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URLDecoder;
 
 /**
  * @Description: TODO
@@ -31,6 +29,7 @@ public class addStuServlet extends HttpServlet {
         }
 //        String jsonString = URLDecoder.decode(sb.toString(),"utf8");
         String jsonString = sb.toString();
+        System.out.println(jsonString);
         // 转Student
         Student student = JSONObject.parseObject(jsonString, Student.class);
         // 调dao

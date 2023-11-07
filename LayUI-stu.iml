@@ -46,4 +46,7 @@
     </orderEntry>
     <orderEntry type="library" name="servlet-api" level="project" />
   </component>
+  <component name="PyDocumentationSettings">
+    <option name="renderExternalDocumentation" value="true" />
+  </component>
 </module>
