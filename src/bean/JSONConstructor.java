@@ -25,8 +25,8 @@ public class JSONConstructor {
     @Override
     public String toString() {
         return "{" +
-                "\"code\":'" + code + '\'' +
-                ", \"msg\":" + msg +
+                "\"code\":" + code +
+                ", \"msg\":\"" + msg + '\"' +
                 ", \"data\":" + data +
                 '}';
     }
