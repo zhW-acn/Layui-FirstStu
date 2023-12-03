@@ -8,9 +8,10 @@ import com.alibaba.fastjson.JSONObject;
  * @date: 2023/11/07/16:16
  */
 public class JSONConstructor {
-    Object code;
-    String msg;
-    String data;
+    Object code; // 返回码
+    String msg;  // 返回消息
+    int count;   // 分页查询。总数
+    String data; // 查询结果
 
     public static String o2J(Object o) {
         return JSONObject.toJSONString(o);
@@ -27,6 +28,7 @@ public class JSONConstructor {
         return "{" +
                 "\"code\":" + code +
                 ", \"msg\":\"" + msg + '\"' +
+                ",\"count\":\"" + count + '\"' +
                 ", \"data\":" + data +
                 '}';
     }
